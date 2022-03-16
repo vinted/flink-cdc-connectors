@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -43,6 +44,7 @@ public class VitessReplicationConnection implements ReplicationConnection {
     private final VitessConnectorConfig config;
     // Channel closing is invoked from the change-event-source-coordinator thread
     private final AtomicReference<ManagedChannel> managedChannel = new AtomicReference<>();
+    private AtomicInteger internalRestarts = new AtomicInteger(5);
 
     public VitessReplicationConnection(VitessConnectorConfig config, VitessDatabaseSchema schema) {
         this.messageDecoder = new VStreamOutputMessageDecoder(schema);
@@ -140,11 +142,20 @@ public class VitessReplicationConnection implements ReplicationConnection {
                     @Override
                     public void onError(Throwable t) {
                         // mitigate Vitess EOF exception
-                        if (isVitessEofException(t)) {
-                            LOGGER.warn(
-                                    "Vitess connection was closed. Restart VitessReplicationConnection using Vgtid: "
-                                            + lastProcessedVgtid,
-                                    t);
+                        if (isVitessEofException(t)
+                                && lastProcessedVgtid != null
+                                && internalRestarts.get() > 0) {
+                            String message =
+                                    String.format(
+                                            "Vitess connection was closed. Restart #:%s. Using Vgtid:%s",
+                                            internalRestarts.decrementAndGet(), lastProcessedVgtid);
+                            LOGGER.warn(message, t);
+                            try {
+                                close();
+                            } catch (Exception e) {
+                                LOGGER.error("Closing vitess connection if still active,");
+                            }
+
                             startStreaming(
                                     lastProcessedVgtid != null ? lastProcessedVgtid : vgtid,
                                     processor,
