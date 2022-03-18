@@ -20,8 +20,12 @@ fully leverage the ability of Debezium. See more about what is [Debezium](https:
 | [tidb-cdc](connectors/tidb-cdc.md)           | <li> [TiDB](https://www.pingcap.com/): 5.1.x, 5.2.x, 5.3.x, 5.4.x, 6.0.0                                                                                                                                                                                                                                                                                                                               | JDBC Driver: 8.0.27       |
 | [Vitess-cdc](connectors/vitess-cdc.md)       | <li> [Vitess](https://vitess.io/): 8.0.x, 9.0.x                                                                                                                                                                                                                                                                                                                                                        | MySql JDBC Driver: 8.0.16 |
 
+<<<<<<< HEAD
 ## Supported Flink Versions
 
+=======
+## Supported Flink Versions 
+>>>>>>> 5b32644 (chore[vitess-cdc]: Rebase from latest master)
 The following table shows the version mapping between Flink<sup>®</sup> CDC Connectors and Flink<sup>®</sup>:
 
 | Flink<sup>®</sup> CDC Version | Flink<sup>®</sup> Version |
