@@ -94,7 +94,6 @@ under the License.
                                     <artifact>io.debezium:debezium-connector-vitess</artifact>
                                     <excludes>
                                         <exclude>io/debezium/connector/vitess/connection/VitessReplicationConnection*</exclude>
-                                        <exclude>io/debezium/connector/vitess/connection/VStreamOutputMessageDecoder*</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
