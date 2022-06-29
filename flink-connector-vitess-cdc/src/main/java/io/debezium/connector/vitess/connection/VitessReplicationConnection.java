@@ -25,12 +25,16 @@ import io.vitess.proto.grpc.VitessGrpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Connection to VTGate to replication messages. Also connect to VTCtld to get the latest {@link
@@ -107,10 +111,8 @@ public class VitessReplicationConnection implements ReplicationConnection {
                                 }
                                 boolean isLastRowEventOfTransaction =
                                         newVgtid != null
-                                                        && numOfRowEvents != 0
-                                                        && rowEventSeen == numOfRowEvents
-                                                ? true
-                                                : false;
+                                                && numOfRowEvents != 0
+                                                && rowEventSeen == numOfRowEvents;
                                 messageDecoder.processMessage(
                                         response.getEvents(i),
                                         processor,
@@ -220,18 +222,61 @@ public class VitessReplicationConnection implements ReplicationConnection {
                     }
                 };
 
+        Topodata.TabletType tabletType =
+                toTopodataTabletType(VtctldConnection.TabletType.valueOf(config.getTabletType()));
+
+        String[] includedTables =
+                Optional.ofNullable(config.tableIncludeList()).orElse("").split(",");
+        String[] excludedTables =
+                Optional.ofNullable(config.tableExcludeList()).orElse("").split(",");
+
+        List<String> explicitTables =
+                Arrays.stream(includedTables)
+                        .filter(element -> !Arrays.asList(excludedTables).contains(element))
+                        .collect(Collectors.toList());
+
         // Providing a vgtid MySQL56/19eb2657-abc2-11ea-8ffc-0242ac11000a:1-61 here will make
-        // VStream to
-        // start receiving row-changes from MySQL56/19eb2657-abc2-11ea-8ffc-0242ac11000a:1-62
-        stub.vStream(
-                Vtgate.VStreamRequest.newBuilder()
-                        .setVgtid(vgtid.getRawVgtid())
-                        .setTabletType(
-                                toTopodataTabletType(
-                                        VtctldConnection.TabletType.valueOf(
-                                                config.getTabletType())))
-                        .build(),
-                responseObserver);
+        // VStream to start receiving row-changes from
+        // MySQL56/19eb2657-abc2-11ea-8ffc-0242ac11000a:1-62
+
+        // Adding table filter to address gho migration issues
+        // https://github.com/vitessio/vitess/blob/fa2f2c066dc4175fea1955ba31f75ef0c7aed58d/proto/binlogdata.proto#L132
+
+        // message Rule {
+        // Match can be a table name or a regular expression.
+        // If it starts with a '/', it's a regular expression.
+        // For example, "t" matches a table named "t", whereas
+        // "/t.*" matches all tables that begin with 't'.
+
+        // Table filter should address missing gho table schema decoration issue
+        // Caused by: java.lang.RuntimeException: io.grpc.StatusRuntimeException: UNKNOWN: target:
+        // xxxxx.0.replica: vttablet: rpc error:
+        //  code = Unknown desc = stream (at source tablet) error unknown table _xxxxxx_ghc in
+        // schema
+        //	at
+        // io.debezium.connector.vitess.VitessStreamingChangeEventSource.execute(VitessStreamingChangeEventSource.java:75)
+        System.out.println(excludedTables);
+        if (explicitTables.size() > 0) {
+            String tableRegexp = "(" + String.join("|", explicitTables) + "){1}";
+            Binlogdata.Filter tableFilter =
+                    Binlogdata.Filter.newBuilder()
+                            .setRules(0, Binlogdata.Rule.newBuilder().setMatch(tableRegexp).build())
+                            .build();
+            stub.vStream(
+                    Vtgate.VStreamRequest.newBuilder()
+                            .setVgtid(vgtid.getRawVgtid())
+                            .setTabletType(Objects.requireNonNull(tabletType))
+                            .setFilter(tableFilter)
+                            .build(),
+                    responseObserver);
+        } else {
+            stub.vStream(
+                    Vtgate.VStreamRequest.newBuilder()
+                            .setVgtid(vgtid.getRawVgtid())
+                            .setTabletType(Objects.requireNonNull(tabletType))
+                            .build(),
+                    responseObserver);
+        }
     }
 
     private VitessGrpc.VitessStub newStub(ManagedChannel channel) {
