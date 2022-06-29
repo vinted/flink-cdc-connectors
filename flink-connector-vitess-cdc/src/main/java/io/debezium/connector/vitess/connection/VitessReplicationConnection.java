@@ -233,6 +233,7 @@ public class VitessReplicationConnection implements ReplicationConnection {
         List<String> explicitTables =
                 Arrays.stream(includedTables)
                         .filter(element -> !Arrays.asList(excludedTables).contains(element))
+                        .map(table -> table.replaceFirst(".*\\.", ""))
                         .collect(Collectors.toList());
 
         // Providing a vgtid MySQL56/19eb2657-abc2-11ea-8ffc-0242ac11000a:1-61 here will make
@@ -242,25 +243,18 @@ public class VitessReplicationConnection implements ReplicationConnection {
         // Adding table filter to address gho migration issues
         // https://github.com/vitessio/vitess/blob/fa2f2c066dc4175fea1955ba31f75ef0c7aed58d/proto/binlogdata.proto#L132
 
-        // message Rule {
-        // Match can be a table name or a regular expression.
-        // If it starts with a '/', it's a regular expression.
-        // For example, "t" matches a table named "t", whereas
-        // "/t.*" matches all tables that begin with 't'.
-
         // Table filter should address missing gho table schema decoration issue
         // Caused by: java.lang.RuntimeException: io.grpc.StatusRuntimeException: UNKNOWN: target:
         // xxxxx.0.replica: vttablet: rpc error:
         //  code = Unknown desc = stream (at source tablet) error unknown table _xxxxxx_ghc in
-        // schema
-        //	at
-        // io.debezium.connector.vitess.VitessStreamingChangeEventSource.execute(VitessStreamingChangeEventSource.java:75)
-        System.out.println(excludedTables);
+        // schema at io.debezium.connector.vitess.VitessStreamingChangeEventSource.execute
+        // (VitessStreamingChangeEventSource.java:75)
+
         if (explicitTables.size() > 0) {
-            String tableRegexp = "(" + String.join("|", explicitTables) + "){1}";
+            String tableRegexp = "/\\b(?:" + String.join("|", explicitTables) + ")\\b";
             Binlogdata.Filter tableFilter =
                     Binlogdata.Filter.newBuilder()
-                            .setRules(0, Binlogdata.Rule.newBuilder().setMatch(tableRegexp).build())
+                            .addRules(Binlogdata.Rule.newBuilder().setMatch(tableRegexp).build())
                             .build();
             stub.vStream(
                     Vtgate.VStreamRequest.newBuilder()
