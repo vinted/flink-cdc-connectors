@@ -75,7 +75,7 @@ under the License.
     </distributionManagement>
 
     <properties>
-        <flink.version>1.13.5</flink.version>
+        <flink.version>1.14.4</flink.version>
         <debezium.version>1.6.4.Final</debezium.version>
         <tikv.version>3.2.0</tikv.version>
         <geometry.version>2.2.0</geometry.version>
@@ -93,7 +93,7 @@ under the License.
         <slf4j.version>1.7.15</slf4j.version>
         <log4j.version>2.17.1</log4j.version>
         <spotless.version>2.4.2</spotless.version>
-        <oblogclient.version>1.0.3</oblogclient.version>
+        <oblogclient.version>1.0.5</oblogclient.version>
         <!-- Enforce single fork execution due to heavy mini cluster use in the tests -->
         <flink.forkCount>1</flink.forkCount>
         <flink.reuseForks>true</flink.reuseForks>
@@ -133,11 +133,11 @@ under the License.
             <version>${slf4j.version}</version>
         </dependency>
 
-        <!--  Use fixed version 18.0-13.0 of flink shaded guava  -->
+        <!--  Use fixed version 30.1.1-jre-14.0 of flink shaded guava  -->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-shaded-guava</artifactId>
-            <version>18.0-13.0</version>
+            <version>30.1.1-jre-14.0</version>
         </dependency>
 
         <!-- test dependencies -->

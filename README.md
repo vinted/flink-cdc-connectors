@@ -18,6 +18,7 @@ This README is meant as a brief walkthrough on the core features of CDC Connecto
 | [tidb-cdc](docs/content/connectors/tidb-cdc.md)           | <li> [TiDB](https://www.pingcap.com): 5.1.x, 5.2.x, 5.3.x, 5.4.x, 6.0.0                                                                                                                                                                                                                                                                                                                                | JDBC Driver: 8.0.27        |
 | [Vitess-cdc](connectors/vitess-cdc.md)                    | <li> [Vitess](https://vitess.io/): 8.0.x, 9.0.x                                                                                                                                                                                                                                                                                                                                                        | MySql JDBC Driver: 8.0.16  |
 
+
 ## Features
 
 1. Supports reading database snapshot and continues to read transaction logs with **exactly-once processing** even failures happen.

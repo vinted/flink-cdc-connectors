@@ -21,7 +21,7 @@ package com.ververica.cdc.connectors.base.source.reader.external;
 import org.apache.flink.table.types.logical.RowType;
 import org.apache.flink.util.FlinkRuntimeException;
 
-import org.apache.flink.shaded.guava18.com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.apache.flink.shaded.guava30.com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import com.ververica.cdc.connectors.base.source.meta.offset.Offset;
 import com.ververica.cdc.connectors.base.source.meta.split.FinishedSnapshotSplitInfo;
@@ -88,7 +88,7 @@ public class JdbcSourceStreamFetcher implements Fetcher<SourceRecord, SourceSpli
                     } catch (Exception e) {
                         LOG.error(
                                 String.format(
-                                        "Execute binlog read task for mysql split %s fail",
+                                        "Execute binlog read task for stream split %s fail",
                                         currentStreamSplit),
                                 e);
                         readException = e;

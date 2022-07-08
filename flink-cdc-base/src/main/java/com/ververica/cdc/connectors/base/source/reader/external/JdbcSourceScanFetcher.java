@@ -20,7 +20,7 @@ package com.ververica.cdc.connectors.base.source.reader.external;
 
 import org.apache.flink.util.FlinkRuntimeException;
 
-import org.apache.flink.shaded.guava18.com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.apache.flink.shaded.guava30.com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import com.ververica.cdc.connectors.base.source.meta.split.SnapshotSplit;
 import com.ververica.cdc.connectors.base.source.meta.split.SourceSplitBase;
@@ -87,7 +87,7 @@ public class JdbcSourceScanFetcher implements Fetcher<SourceRecord, SourceSplitB
                     } catch (Exception e) {
                         LOG.error(
                                 String.format(
-                                        "Execute snapshot read task for mysql split %s fail",
+                                        "Execute snapshot read task for snapshot split %s fail",
                                         currentSnapshotSplit),
                                 e);
                         readException = e;
