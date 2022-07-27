@@ -12,7 +12,7 @@ In order to setup the Vitess CDC connector, the following table provides depende
 
 ```
 <dependency>
-  <groupId>com.ververica</groupId>
+  <groupId>com.vinted</groupId>
   <artifactId>flink-connector-vitess-cdc</artifactId>
   <version>2.0.0</version>
 </dependency>

@@ -11,10 +11,10 @@ In order to setup the SQLServer CDC connector, the following table provides depe
 
 ```
 <dependency>
-  <groupId>com.ververica</groupId>
+  <groupId>com.vinted</groupId>
   <artifactId>flink-connector-sqlserver-cdc</artifactId>
   <!-- The dependency is available only for stable releases, SNAPSHOT dependency need build by yourself. -->
-  <version>2.3-SNAPSHOT</version>
+  <version>2.3.7</version>
 </dependency>
 ```
 
