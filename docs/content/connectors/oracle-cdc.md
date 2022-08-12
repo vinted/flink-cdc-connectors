@@ -14,7 +14,7 @@ In order to setup the Oracle CDC connector, the following table provides depende
   <groupId>com.vinted</groupId>
   <artifactId>flink-connector-oracle-cdc</artifactId>
   <!-- The dependency is available only for stable releases, SNAPSHOT dependency need build by yourself. -->
-  <version>2.3.11</version>
+  <version>2.3.12</version>
 </dependency>
 ```
 
