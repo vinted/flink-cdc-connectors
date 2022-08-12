@@ -156,7 +156,6 @@ public class VitessReplicationConnection implements ReplicationConnection {
                     public void onError(Throwable t) {
 
                         if (isVitessEofException(t)) {
-                            lastErrorVgtid = lastProcessedVgtid;
                             // mitigate Vitess EOF exception when initial load is done
                             if (lastProcessedVgtid != null && internalRestarts.get() > 0) {
                                 String message =
@@ -190,6 +189,7 @@ public class VitessReplicationConnection implements ReplicationConnection {
                                         t);
                                 error.compareAndSet(null, t);
                             }
+                            lastErrorVgtid = lastProcessedVgtid;
                         } else {
                             LOGGER.error(
                                     "VStream streaming onError. Status: " + Status.fromThrowable(t),
