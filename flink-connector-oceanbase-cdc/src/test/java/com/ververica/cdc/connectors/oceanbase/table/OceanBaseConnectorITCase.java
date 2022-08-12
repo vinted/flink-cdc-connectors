@@ -35,9 +35,7 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,7 +75,7 @@ public class OceanBaseConnectorITCase extends OceanBaseTestBase {
     }
 
     @Test
-    public void testConsumingAllEvents() throws Exception {
+    public void testTableList() throws Exception {
         initializeTable("inventory");
 
         String sourceDDL =
@@ -94,19 +92,18 @@ public class OceanBaseConnectorITCase extends OceanBaseTestBase {
                                 + " 'username' = '%s',"
                                 + " 'password' = '%s',"
                                 + " 'tenant-name' = '%s',"
-                                + " 'database-name' = '%s',"
-                                + " 'table-name' = '%s',"
+                                + " 'table-list' = '%s',"
                                 + " 'hostname' = '%s',"
                                 + " 'port' = '%s',"
                                 + " 'logproxy.host' = '%s',"
                                 + " 'logproxy.port' = '%s',"
-                                + " 'rootserver-list' = '%s'"
+                                + " 'rootserver-list' = '%s',"
+                                + " 'working-mode' = 'memory'"
                                 + ")",
                         getUsername(),
                         getPassword(),
                         getTenant(),
-                        "inventory",
-                        "products",
+                        "inventory.products",
                         getObServerHost(),
                         getObServerSqlPort(),
                         getLogProxyHost(),
@@ -224,13 +221,14 @@ public class OceanBaseConnectorITCase extends OceanBaseTestBase {
                                 + " 'port' = '%s',"
                                 + " 'logproxy.host' = '%s',"
                                 + " 'logproxy.port' = '%s',"
-                                + " 'rootserver-list' = '%s'"
+                                + " 'rootserver-list' = '%s',"
+                                + " 'working-mode' = 'memory'"
                                 + ")",
                         getUsername(),
                         getPassword(),
                         getTenant(),
-                        "inventory_meta",
-                        "products",
+                        "^inventory_meta$",
+                        "^products$",
                         getObServerHost(),
                         getObServerSqlPort(),
                         getLogProxyHost(),
@@ -288,13 +286,12 @@ public class OceanBaseConnectorITCase extends OceanBaseTestBase {
 
     @Test
     public void testAllDataTypes() throws Exception {
-        ZoneId serverTimeZone = ZoneId.systemDefault();
-        ZoneOffset zoneOffset = serverTimeZone.getRules().getOffset(Instant.now());
+        String serverTimeZone = "+00:00";
         try (Connection connection = getJdbcConnection("");
                 Statement statement = connection.createStatement()) {
-            statement.execute(String.format("SET GLOBAL time_zone = '%s';", zoneOffset.getId()));
+            statement.execute(String.format("SET GLOBAL time_zone = '%s';", serverTimeZone));
         }
-        tEnv.getConfig().setLocalTimeZone(serverTimeZone);
+        tEnv.getConfig().setLocalTimeZone(ZoneId.of(serverTimeZone));
         initializeTable("column_type_test");
         String sourceDDL =
                 String.format(
@@ -347,13 +344,14 @@ public class OceanBaseConnectorITCase extends OceanBaseTestBase {
                                 + " 'port' = '%s',"
                                 + " 'logproxy.host' = '%s',"
                                 + " 'logproxy.port' = '%s',"
-                                + " 'rootserver-list' = '%s'"
+                                + " 'rootserver-list' = '%s',"
+                                + " 'working-mode' = 'memory'"
                                 + ")",
                         getUsername(),
                         getPassword(),
                         getTenant(),
-                        "column_type_test",
-                        "full_types",
+                        "^column_type_test$",
+                        "^full_types$",
                         serverTimeZone,
                         getObServerHost(),
                         getObServerSqlPort(),

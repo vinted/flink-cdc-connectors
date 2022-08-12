@@ -54,6 +54,7 @@ public class OceanBaseSource {
         private String tenantName;
         private String databaseName;
         private String tableName;
+        private String tableList;
         private String serverTimeZone;
         private Duration connectTimeout;
 
@@ -99,6 +100,11 @@ public class OceanBaseSource {
 
         public Builder<T> tableName(String tableName) {
             this.tableName = tableName;
+            return this;
+        }
+
+        public Builder<T> tableList(String tableList) {
+            this.tableList = tableList;
             return this;
         }
 
@@ -182,8 +188,19 @@ public class OceanBaseSource {
                             startupMode + " mode is not supported.");
             }
 
+            if (StringUtils.isNotEmpty(databaseName) || StringUtils.isNotEmpty(tableName)) {
+                if (StringUtils.isEmpty(databaseName) || StringUtils.isEmpty(tableName)) {
+                    throw new IllegalArgumentException(
+                            "'database-name' and 'table-name' should be configured at the same time");
+                }
+            } else {
+                checkNotNull(
+                        tableList,
+                        "'database-name', 'table-name' or 'table-list' should be configured");
+            }
+
             if (serverTimeZone == null) {
-                serverTimeZone = "UTC";
+                serverTimeZone = "+00:00";
             }
             ZoneOffset zoneOffset = ZoneId.of(serverTimeZone).getRules().getOffset(Instant.now());
 
@@ -191,15 +208,13 @@ public class OceanBaseSource {
                 connectTimeout = Duration.ofSeconds(30);
             }
 
-            String tableWhiteList =
-                    String.format(
-                            "%s.%s.%s",
-                            checkNotNull(tenantName),
-                            checkNotNull(databaseName),
-                            checkNotNull(tableName));
-
             if (logProxyClientId == null) {
-                logProxyClientId = ClientIdGenerator.generate() + "_" + tableWhiteList;
+                logProxyClientId =
+                        String.format(
+                                "%s_%s_%s",
+                                ClientIdGenerator.generate(),
+                                Thread.currentThread().getId(),
+                                checkNotNull(tenantName));
             }
             ClientConf clientConf =
                     ClientConf.builder()
@@ -219,9 +234,8 @@ public class OceanBaseSource {
             }
             obReaderConfig.setUsername(username);
             obReaderConfig.setPassword(password);
-            obReaderConfig.setTableWhiteList(tableWhiteList);
             obReaderConfig.setStartTimestamp(startupTimestamp);
-            obReaderConfig.setTimezone(zoneOffset.getId());
+            obReaderConfig.setTimezone(serverTimeZone);
 
             return new OceanBaseRichSourceFunction<T>(
                     StartupMode.INITIAL.equals(startupMode),
@@ -230,6 +244,7 @@ public class OceanBaseSource {
                     tenantName,
                     databaseName,
                     tableName,
+                    tableList,
                     zoneOffset,
                     connectTimeout,
                     hostname,
