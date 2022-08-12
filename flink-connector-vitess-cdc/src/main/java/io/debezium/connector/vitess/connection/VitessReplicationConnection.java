@@ -167,7 +167,9 @@ public class VitessReplicationConnection implements ReplicationConnection {
                                 LOGGER.warn(message, t);
                                 restartStreaming(
                                         lastProcessedVgtid != null ? lastProcessedVgtid : vgtid);
-                            } else if (internalRestarts.get() <= 0
+                            }
+                            // Mitigate vgtid expired with EOF exception in case SKIP is enabled
+                            else if (internalRestarts.get() <= 0
                                     && lastProcessedVgtid == lastErrorVgtid
                                     && config.getEventProcessingFailureHandlingMode()
                                             == CommonConnectorConfig
