@@ -8,6 +8,7 @@ package io.debezium.connector.vitess.connection;
 
 import binlogdata.Binlogdata;
 import binlogdata.Binlogdata.VEvent;
+import io.debezium.config.CommonConnectorConfig;
 import io.debezium.connector.vitess.Vgtid;
 import io.debezium.connector.vitess.VitessConnectorConfig;
 import io.debezium.connector.vitess.VitessDatabaseSchema;
@@ -88,6 +89,7 @@ public class VitessReplicationConnection implements ReplicationConnection {
                 new StreamObserver<Vtgate.VStreamResponse>() {
 
                     private Vgtid lastProcessedVgtid = null;
+                    private Vgtid lastErrorVgtid = null;
 
                     @Override
                     public void onNext(Vtgate.VStreamResponse response) {
@@ -141,32 +143,55 @@ public class VitessReplicationConnection implements ReplicationConnection {
                         }
                     }
 
+                    private void restartStreaming(Vgtid startVgtid) {
+                        try {
+                            close();
+                        } catch (Exception e) {
+                            LOGGER.warn("Closing vitess connection error.", e);
+                        }
+                        startStreaming(startVgtid, processor, error);
+                    }
+
                     @Override
                     public void onError(Throwable t) {
-                        // mitigate Vitess EOF exception
-                        if (isVitessEofException(t)
-                                && lastProcessedVgtid != null
-                                && internalRestarts.get() > 0) {
-                            String message =
-                                    String.format(
-                                            "Vitess connection was closed. Restart #:%s. Using Vgtid:%s",
-                                            internalRestarts.decrementAndGet(), lastProcessedVgtid);
-                            LOGGER.warn(message, t);
-                            try {
-                                close();
-                            } catch (Exception e) {
-                                LOGGER.error("Closing vitess connection if still active,");
-                            }
 
-                            startStreaming(
-                                    lastProcessedVgtid != null ? lastProcessedVgtid : vgtid,
-                                    processor,
-                                    error);
+                        if (isVitessEofException(t)) {
+                            lastErrorVgtid = lastProcessedVgtid;
+                            // mitigate Vitess EOF exception when initial load is done
+                            if (lastProcessedVgtid != null && internalRestarts.get() > 0) {
+                                String message =
+                                        String.format(
+                                                "Vitess connection was closed. Restart #:%s. Using Vgtid:%s",
+                                                internalRestarts.decrementAndGet(),
+                                                lastProcessedVgtid);
+                                LOGGER.warn(message, t);
+                                restartStreaming(
+                                        lastProcessedVgtid != null ? lastProcessedVgtid : vgtid);
+                            } else if (internalRestarts.get() <= 0
+                                    && lastProcessedVgtid == lastErrorVgtid
+                                    && config.getEventProcessingFailureHandlingMode()
+                                            == CommonConnectorConfig
+                                                    .EventProcessingFailureHandlingMode.SKIP) {
+                                Vgtid latestExistingVgtid = defaultVgtid(config);
+                                String message =
+                                        String.format(
+                                                "Vitess connection was closed and didn't recover. "
+                                                        + "Vgtid:%s is probably expired, skipping to latest ",
+                                                internalRestarts.decrementAndGet(),
+                                                lastProcessedVgtid);
+                                LOGGER.warn(message, t);
+                                restartStreaming(latestExistingVgtid);
+                            } else {
+                                LOGGER.error(
+                                        "VStream streaming onError. Status: "
+                                                + Status.fromThrowable(t),
+                                        t);
+                                error.compareAndSet(null, t);
+                            }
                         } else {
-                            LOGGER.info(
+                            LOGGER.error(
                                     "VStream streaming onError. Status: " + Status.fromThrowable(t),
                                     t);
-                            // Only propagate the first error
                             error.compareAndSet(null, t);
                         }
                     }
