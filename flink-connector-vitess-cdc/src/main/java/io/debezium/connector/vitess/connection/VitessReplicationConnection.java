@@ -81,6 +81,10 @@ public class VitessReplicationConnection implements ReplicationConnection {
             Objects.requireNonNull(vgtid);
         }
 
+        LOGGER.info(
+                "Event failure handling mode:"
+                        + config.getEventProcessingFailureHandlingMode().getValue());
+
         ManagedChannel channel = newChannel(config.getVtgateHost(), config.getVtgatePort());
         managedChannel.compareAndSet(null, channel);
 
@@ -154,32 +158,47 @@ public class VitessReplicationConnection implements ReplicationConnection {
 
                     @Override
                     public void onError(Throwable t) {
-
                         if (isVitessEofException(t)) {
                             // mitigate Vitess EOF exception when initial load is done
-                            if (lastProcessedVgtid != null && internalRestarts.get() > 0) {
+                            Vgtid currentVgtid =
+                                    lastProcessedVgtid != null ? lastProcessedVgtid : vgtid;
+
+                            LOGGER.warn(
+                                    String.format(
+                                            ""
+                                                    + "Initial vgid:%s, "
+                                                    + "lastProcessedVgtid:%s, "
+                                                    + "lastErrorVgtid:%s, "
+                                                    + "eventHandlingMode: %s, "
+                                                    + "internalRestarts: %s"),
+                                    vgtid,
+                                    lastProcessedVgtid,
+                                    lastErrorVgtid,
+                                    config.getEventProcessingFailureHandlingMode().getValue(),
+                                    internalRestarts.get());
+
+                            if (internalRestarts.get() > 0) {
                                 String message =
                                         String.format(
                                                 "Vitess connection was closed. Restart #:%s. Using Vgtid:%s",
-                                                internalRestarts.decrementAndGet(),
-                                                lastProcessedVgtid);
+                                                internalRestarts.decrementAndGet(), currentVgtid);
                                 LOGGER.warn(message, t);
-                                restartStreaming(
-                                        lastProcessedVgtid != null ? lastProcessedVgtid : vgtid);
+                                restartStreaming(currentVgtid);
                             }
                             // Mitigate vgtid expired with EOF exception in case SKIP is enabled
                             else if (internalRestarts.get() <= 0
-                                    && lastProcessedVgtid == lastErrorVgtid
+                                    && lastErrorVgtid.equals(currentVgtid)
                                     && config.getEventProcessingFailureHandlingMode()
-                                            == CommonConnectorConfig
-                                                    .EventProcessingFailureHandlingMode.SKIP) {
+                                            .equals(
+                                                    CommonConnectorConfig
+                                                            .EventProcessingFailureHandlingMode
+                                                            .SKIP)) {
                                 Vgtid latestExistingVgtid = defaultVgtid(config);
                                 String message =
                                         String.format(
                                                 "Vitess connection was closed and didn't recover. "
-                                                        + "Vgtid:%s is probably expired, skipping to latest ",
-                                                internalRestarts.decrementAndGet(),
-                                                lastProcessedVgtid);
+                                                        + "Vgtid:%s is probably expired, skipping to latest Vgtid:%s ",
+                                                currentVgtid, latestExistingVgtid);
                                 LOGGER.warn(message, t);
                                 restartStreaming(latestExistingVgtid);
                             } else {
@@ -189,7 +208,7 @@ public class VitessReplicationConnection implements ReplicationConnection {
                                         t);
                                 error.compareAndSet(null, t);
                             }
-                            lastErrorVgtid = lastProcessedVgtid;
+                            lastErrorVgtid = currentVgtid;
                         } else {
                             LOGGER.error(
                                     "VStream streaming onError. Status: " + Status.fromThrowable(t),
