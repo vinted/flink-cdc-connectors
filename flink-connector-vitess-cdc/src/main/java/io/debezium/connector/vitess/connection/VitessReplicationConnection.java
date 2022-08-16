@@ -158,23 +158,36 @@ public class VitessReplicationConnection implements ReplicationConnection {
 
                     @Override
                     public void onError(Throwable t) {
-
                         if (isVitessEofException(t)) {
                             // mitigate Vitess EOF exception when initial load is done
-                            if (lastProcessedVgtid != null && internalRestarts.get() > 0) {
+                            Vgtid currentVgtid =
+                                    lastProcessedVgtid != null ? lastProcessedVgtid : vgtid;
+
+                            LOGGER.warn(
+                                    String.format(
+                                            ""
+                                                    + "Initial vgid:%s, "
+                                                    + "lastProcessedVgtid:%s, "
+                                                    + "lastErrorVgtid:%s, "
+                                                    + "eventHandlingMode: %s, "
+                                                    + "internalRestarts: %s"),
+                                    vgtid,
+                                    lastProcessedVgtid,
+                                    lastErrorVgtid,
+                                    config.getEventProcessingFailureHandlingMode().getValue(),
+                                    internalRestarts.get());
+
+                            if (internalRestarts.get() > 0) {
                                 String message =
                                         String.format(
                                                 "Vitess connection was closed. Restart #:%s. Using Vgtid:%s",
-                                                internalRestarts.decrementAndGet(),
-                                                lastProcessedVgtid);
+                                                internalRestarts.decrementAndGet(), currentVgtid);
                                 LOGGER.warn(message, t);
-                                restartStreaming(
-                                        lastProcessedVgtid != null ? lastProcessedVgtid : vgtid);
+                                restartStreaming(currentVgtid);
                             }
                             // Mitigate vgtid expired with EOF exception in case SKIP is enabled
                             else if (internalRestarts.get() <= 0
-                                    && lastErrorVgtid.equals(
-                                            lastProcessedVgtid != null ? lastProcessedVgtid : vgtid)
+                                    && lastErrorVgtid.equals(currentVgtid)
                                     && config.getEventProcessingFailureHandlingMode()
                                             .equals(
                                                     CommonConnectorConfig
@@ -185,7 +198,7 @@ public class VitessReplicationConnection implements ReplicationConnection {
                                         String.format(
                                                 "Vitess connection was closed and didn't recover. "
                                                         + "Vgtid:%s is probably expired, skipping to latest Vgtid:%s ",
-                                                lastProcessedVgtid, latestExistingVgtid);
+                                                currentVgtid, latestExistingVgtid);
                                 LOGGER.warn(message, t);
                                 restartStreaming(latestExistingVgtid);
                             } else {
@@ -195,8 +208,7 @@ public class VitessReplicationConnection implements ReplicationConnection {
                                         t);
                                 error.compareAndSet(null, t);
                             }
-                            lastErrorVgtid =
-                                    lastProcessedVgtid != null ? lastProcessedVgtid : vgtid;
+                            lastErrorVgtid = currentVgtid;
                         } else {
                             LOGGER.error(
                                     "VStream streaming onError. Status: " + Status.fromThrowable(t),

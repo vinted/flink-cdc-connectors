@@ -14,7 +14,7 @@ In order to setup the MongoDB CDC connector, the following table provides depend
   <groupId>com.vinted</groupId>
   <artifactId>flink-connector-mongodb-cdc</artifactId>
   <!-- The dependency is available only for stable releases, SNAPSHOT dependency need build by yourself. -->
-  <version>2.3.13</version>
+  <version>2.3.14</version>
 </dependency>
 ```
 
