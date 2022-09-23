@@ -170,12 +170,13 @@ public class VitessReplicationConnection implements ReplicationConnection {
                                                     + "lastProcessedVgtid:%s, "
                                                     + "lastErrorVgtid:%s, "
                                                     + "eventHandlingMode: %s, "
-                                                    + "internalRestarts: %s"),
-                                    vgtid,
-                                    lastProcessedVgtid,
-                                    lastErrorVgtid,
-                                    config.getEventProcessingFailureHandlingMode().getValue(),
-                                    internalRestarts.get());
+                                                    + "internalRestarts: %s",
+                                            vgtid,
+                                            lastProcessedVgtid,
+                                            lastErrorVgtid,
+                                            config.getEventProcessingFailureHandlingMode()
+                                                    .getValue(),
+                                            internalRestarts.get()));
 
                             if (internalRestarts.get() > 0) {
                                 String message =
