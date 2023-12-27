@@ -18,7 +18,7 @@ under the License.
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>flink-cdc-source-connectors</artifactId>
-        <groupId>com.ververica</groupId>
+        <groupId>com.vinted</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -27,7 +27,7 @@ under the License.
 
     <dependencies>
         <dependency>
-            <groupId>com.ververica</groupId>
+            <groupId>com.vinted</groupId>
             <artifactId>flink-connector-tidb-cdc</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -50,8 +50,8 @@ under the License.
                             <shadeTestJar>false</shadeTestJar>
                             <artifactSet>
                                 <includes>
-                                    <include>com.ververica:flink-connector-debezium</include>
-                                    <include>com.ververica:flink-connector-tidb-cdc</include>
+                                    <include>com.vinted:flink-connector-debezium</include>
+                                    <include>com.vinted:flink-connector-tidb-cdc</include>
                                     <include>org.tikv:tikv-client-java</include>
                                     <include>com.google.protobuf:*</include>
                                     <include>io.grpc:*</include>

@@ -15,7 +15,7 @@ flink 1.17.2  flink mysql cdc 2.4.2
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ververica</groupId>
+    <groupId>com.vinted</groupId>
     <artifactId>FlinkCDCTest</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -94,7 +94,7 @@ flink 1.17.2  flink mysql cdc 2.4.2
             <version>30.1.1-jre-16.1</version>
         </dependency>
         <dependency>
-            <groupId>com.ververica</groupId>
+            <groupId>com.vinted</groupId>
             <artifactId>flink-connector-mysql-cdc</artifactId>
             <version>2.4.2</version>
         </dependency>
@@ -145,8 +145,8 @@ flink 1.17.2  flink mysql cdc 2.4.2
                                     <include>io.debezium:debezium-core</include>
                                     <include>io.debezium:debezium-ddl-parser</include>
                                     <include>io.debezium:debezium-connector-mysql</include>
-                                    <include>com.ververica:flink-connector-debezium</include>
-                                    <include>com.ververica:flink-connector-mysql-cdc</include>
+                                    <include>com.vinted:flink-connector-debezium</include>
+                                    <include>com.vinted:flink-connector-mysql-cdc</include>
                                     <include>org.antlr:antlr4-runtime</include>
                                     <include>org.apache.kafka:*</include>
                                     <include>mysql:mysql-connector-java</include>

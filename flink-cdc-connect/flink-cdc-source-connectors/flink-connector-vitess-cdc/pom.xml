@@ -18,7 +18,7 @@ under the License.
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>flink-cdc-source-connectors</artifactId>
-        <groupId>com.ververica</groupId>
+        <groupId>com.vinted</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -31,7 +31,7 @@ under the License.
 
         <!-- Debezium dependencies -->
         <dependency>
-            <groupId>com.ververica</groupId>
+            <groupId>com.vinted</groupId>
             <artifactId>flink-connector-debezium</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -45,11 +45,13 @@ under the License.
         <dependency>
             <groupId>io.debezium</groupId>
             <artifactId>debezium-connector-vitess</artifactId>
-            <version>${debezium.version}</version>
+            <!-- Use patched debezium connector version -->
+            <version>1.9.12.Final</version>
+<!--            <version>${debezium.version}</version>-->
         </dependency>
 
         <dependency>
-            <groupId>com.ververica</groupId>
+            <groupId>com.vinted</groupId>
             <artifactId>flink-cdc-common</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -57,7 +59,7 @@ under the License.
         <!-- test dependencies on Debezium -->
 
         <dependency>
-            <groupId>com.ververica</groupId>
+            <groupId>com.vinted</groupId>
             <artifactId>flink-connector-test-util</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

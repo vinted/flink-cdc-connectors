@@ -17,7 +17,7 @@ MySQL CDC 连接器允许从 MySQL 数据库读取快照数据和增量数据。
 
 ```
 <dependency>
-  <groupId>com.ververica</groupId>
+  <groupId>com.vinted</groupId>
   <artifactId>flink-connector-mysql-cdc</artifactId>
   <!-- 请使用已发布的版本依赖，snapshot版本的依赖需要本地自行编译。 -->
   <version>3.0-SNAPSHOT</version>

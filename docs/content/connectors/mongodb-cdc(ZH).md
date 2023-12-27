@@ -10,7 +10,7 @@ MongoDB CDC 连接器允许从 MongoDB 读取快照数据和增量数据。 本�
 ### Maven dependency
 ```
 <dependency>
-  <groupId>com.ververica</groupId>
+  <groupId>com.vinted</groupId>
   <artifactId>flink-connector-mongodb-cdc</artifactId>
   <!-- 依赖项仅适用于稳定版本，SNAPSHOT依赖项需要自己构建。 -->
   <version>3.0-SNAPSHOT</version>

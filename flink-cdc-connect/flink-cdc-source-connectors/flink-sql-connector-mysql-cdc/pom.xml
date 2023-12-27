@@ -18,7 +18,7 @@ under the License.
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>flink-cdc-source-connectors</artifactId>
-        <groupId>com.ververica</groupId>
+        <groupId>com.vinted</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -27,7 +27,7 @@ under the License.
 
     <dependencies>
         <dependency>
-            <groupId>com.ververica</groupId>
+            <groupId>com.vinted</groupId>
             <artifactId>flink-connector-mysql-cdc</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -55,8 +55,8 @@ under the License.
                                     <include>io.debezium:debezium-core</include>
                                     <include>io.debezium:debezium-ddl-parser</include>
                                     <include>io.debezium:debezium-connector-mysql</include>
-                                    <include>com.ververica:flink-connector-debezium</include>
-                                    <include>com.ververica:flink-connector-mysql-cdc</include>
+                                    <include>com.vinted:flink-connector-debezium</include>
+                                    <include>com.vinted:flink-connector-mysql-cdc</include>
                                     <include>org.antlr:antlr4-runtime</include>
                                     <include>org.apache.kafka:*</include>
                                     <include>mysql:mysql-connector-java</include>
@@ -84,10 +84,22 @@ under the License.
                                 </filter>
                             </filters>
                             <relocations>
+                                <!--                                <relocation>-->
+                                <!--                                    <pattern>org.apache.kafka</pattern>-->
+                                <!--                                    <shadedPattern>-->
+                                <!--                                        com.ververica.cdc.connectors.shaded.org.apache.kafka-->
+                                <!--                                    </shadedPattern>-->
+                                <!--                                </relocation>-->
                                 <relocation>
-                                    <pattern>org.apache.kafka</pattern>
+                                    <pattern>org.apache.kafka.clients</pattern>
                                     <shadedPattern>
-                                        com.ververica.cdc.connectors.shaded.org.apache.kafka
+                                        com.ververica.cdc.connectors.shaded.org.apache.kafka.clients
+                                    </shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.kafka.common</pattern>
+                                    <shadedPattern>
+                                        com.ververica.cdc.connectors.shaded.org.apache.kafka.common
                                     </shadedPattern>
                                 </relocation>
                                 <relocation>

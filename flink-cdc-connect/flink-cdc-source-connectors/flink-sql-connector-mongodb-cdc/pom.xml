@@ -18,7 +18,7 @@ under the License.
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>flink-cdc-source-connectors</artifactId>
-        <groupId>com.ververica</groupId>
+        <groupId>com.vinted</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -27,7 +27,7 @@ under the License.
 
     <dependencies>
         <dependency>
-            <groupId>com.ververica</groupId>
+            <groupId>com.vinted</groupId>
             <artifactId>flink-connector-mongodb-cdc</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -53,9 +53,9 @@ under the License.
                                     <include>io.debezium:debezium-api</include>
                                     <include>io.debezium:debezium-embedded</include>
                                     <include>io.debezium:debezium-core</include>
-                                    <include>com.ververica:flink-cdc-base</include>
-                                    <include>com.ververica:flink-connector-debezium</include>
-                                    <include>com.ververica:flink-connector-mongodb-cdc</include>
+                                    <include>com.vinted:flink-cdc-base</include>
+                                    <include>com.vinted:flink-connector-debezium</include>
+                                    <include>com.vinted:flink-connector-mongodb-cdc</include>
                                     <include>org.mongodb.kafka:mongo-kafka-connect</include>
                                     <include>org.mongodb:mongodb-driver-sync</include>
                                     <include>org.mongodb:mongodb-driver-core</include>

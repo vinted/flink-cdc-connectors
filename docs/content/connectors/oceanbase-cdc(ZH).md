@@ -8,7 +8,7 @@ OceanBase CDC 连接器允许从 OceanBase 读取快照数据和增量数据。�
 
 ```xml
 <dependency>
-  <groupId>com.ververica</groupId>
+  <groupId>com.vinted</groupId>
   <artifactId>flink-connector-oceanbase-cdc</artifactId>
   <!--  请使用已发布的版本依赖，snapshot 版本的依赖需要本地自行编译。 -->
   <version>3.0-SNAPSHOT</version>
