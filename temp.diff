@@ -1,0 +1,804 @@
+
+ ```
+
+diff --git a/flink-connector-debezium/src/main/java/io/debezium/metrics/Metrics.java b/flink-connector-debezium/src/main/java/io/debezium/metrics/Metrics.java
+new file mode 100644
+index 00000000..02b764f3
+--- /dev/null
++++ b/flink-connector-debezium/src/main/java/io/debezium/metrics/Metrics.java
+@@ -0,0 +1,46 @@
++/*
++ * Copyright Debezium Authors.
++ *
++ * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
++ */
++
++package io.debezium.metrics;
++
++import io.debezium.annotation.ThreadSafe;
++import io.debezium.config.CommonConnectorConfig;
++import io.debezium.connector.common.CdcSourceTaskContext;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
++
++import java.util.Map;
++
++/** Disabling debezium metrics altogether. */
++@ThreadSafe
++public abstract class Metrics {
++    private static final Logger LOGGER = LoggerFactory.getLogger(Metrics.class);
++
++    protected Metrics(CdcSourceTaskContext taskContext, String contextName) {}
++
++    protected Metrics(CdcSourceTaskContext taskContext, Map<String, String> tags) {}
++
++    protected Metrics(
++            CommonConnectorConfig connectorConfig,
++            String contextName,
++            boolean multiPartitionMode) {}
++
++    /**
++     * Registers a metrics MBean into the platform MBean server. The method is intentionally
++     * synchronized to prevent preemption between registration and unregistration.
++     */
++    public synchronized void register() {
++        LOGGER.info("JMX Metrics are not supported");
++    }
++
++    /**
++     * Unregisters a metrics MBean from the platform MBean server. The method is intentionally
++     * synchronized to prevent preemption between registration and unregistration.
++     */
++    public synchronized void unregister() {
++        LOGGER.info("JMX Metrics are not supported");
++    }
++}
+diff --git a/flink-connector-mongodb-cdc/pom.xml b/flink-connector-mongodb-cdc/pom.xml
+index 600c9898..4541b0df 100644
+--- a/flink-connector-mongodb-cdc/pom.xml
++++ b/flink-connector-mongodb-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -30,7 +30,7 @@ under the License.
+     <dependencies>
+         <!-- Debezium dependencies -->
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-debezium</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+@@ -42,7 +42,7 @@ under the License.
+         </dependency>
+ 
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-cdc-base</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+@@ -72,7 +72,7 @@ under the License.
+ 
+         <!-- test dependencies on Flink -->
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-test-util</artifactId>
+             <version>${project.version}</version>
+             <scope>test</scope>
+@@ -174,4 +174,4 @@ under the License.
+ 
+     </dependencies>
+ 
+-</project>
+\ No newline at end of file
++</project>
+diff --git a/flink-connector-mysql-cdc/pom.xml b/flink-connector-mysql-cdc/pom.xml
+index 4671dd07..111a61aa 100644
+--- a/flink-connector-mysql-cdc/pom.xml
++++ b/flink-connector-mysql-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -31,7 +31,7 @@ under the License.
+ 
+         <!-- Debezium dependencies -->
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-debezium</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+@@ -76,7 +76,7 @@ under the License.
+         <!-- test dependencies on Debezium -->
+ 
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-test-util</artifactId>
+             <version>${project.version}</version>
+             <scope>test</scope>
+diff --git a/flink-connector-oceanbase-cdc/pom.xml b/flink-connector-oceanbase-cdc/pom.xml
+index 69072615..16080ea9 100644
+--- a/flink-connector-oceanbase-cdc/pom.xml
++++ b/flink-connector-oceanbase-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -30,7 +30,7 @@ under the License.
+     <dependencies>
+         <!-- Debezium dependencies -->
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-debezium</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+diff --git a/flink-connector-oracle-cdc/pom.xml b/flink-connector-oracle-cdc/pom.xml
+index 7b7a4fd7..d92cf5eb 100644
+--- a/flink-connector-oracle-cdc/pom.xml
++++ b/flink-connector-oracle-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -30,14 +30,14 @@ under the License.
+     <dependencies>
+ 
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-cdc-base</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+ 
+         <!-- Debezium dependencies -->
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-debezium</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+@@ -57,7 +57,7 @@ under the License.
+         <!-- test dependencies on Debezium -->
+ 
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-test-util</artifactId>
+             <version>${project.version}</version>
+             <scope>test</scope>
+diff --git a/flink-connector-postgres-cdc/pom.xml b/flink-connector-postgres-cdc/pom.xml
+index 47a9f777..9e7b7c4d 100644
+--- a/flink-connector-postgres-cdc/pom.xml
++++ b/flink-connector-postgres-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -31,7 +31,7 @@ under the License.
+     <dependencies>
+ 
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-cdc-base</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+@@ -44,7 +44,7 @@ under the License.
+ 
+         <!-- Debezium dependencies -->
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-debezium</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+@@ -77,7 +77,7 @@ under the License.
+         <!-- test dependencies on Debezium -->
+ 
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-test-util</artifactId>
+             <version>${project.version}</version>
+             <scope>test</scope>
+@@ -168,4 +168,4 @@ under the License.
+ 
+     </dependencies>
+ 
+-</project>
+\ No newline at end of file
++</project>
+diff --git a/flink-connector-sqlserver-cdc/pom.xml b/flink-connector-sqlserver-cdc/pom.xml
+index b9fa1077..0feb97c2 100644
+--- a/flink-connector-sqlserver-cdc/pom.xml
++++ b/flink-connector-sqlserver-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -31,14 +31,14 @@ under the License.
+     <dependencies>
+ 
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-cdc-base</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+ 
+         <!-- Debezium dependencies -->
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-debezium</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+@@ -58,7 +58,7 @@ under the License.
+         <!-- test dependencies on Debezium -->
+ 
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-test-util</artifactId>
+             <version>${project.version}</version>
+             <scope>test</scope>
+diff --git a/flink-connector-test-util/pom.xml b/flink-connector-test-util/pom.xml
+index ea7ae19a..4ca1344e 100644
+--- a/flink-connector-test-util/pom.xml
++++ b/flink-connector-test-util/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -29,7 +29,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-debezium</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+@@ -53,4 +53,4 @@ under the License.
+         </dependency>
+     </dependencies>
+ 
+-</project>
+\ No newline at end of file
++</project>
+diff --git a/flink-connector-tidb-cdc/pom.xml b/flink-connector-tidb-cdc/pom.xml
+index a52dcf6e..aae03e98 100644
+--- a/flink-connector-tidb-cdc/pom.xml
++++ b/flink-connector-tidb-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -30,7 +30,7 @@ under the License.
+     <dependencies>
+         <!-- Debezium dependencies -->
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-debezium</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+@@ -146,4 +146,4 @@ under the License.
+     </dependencies>
+ 
+ 
+-</project>
+\ No newline at end of file
++</project>
+diff --git a/flink-connector-vitess-cdc/pom.xml b/flink-connector-vitess-cdc/pom.xml
+index 9400de34..c39a2ead 100644
+--- a/flink-connector-vitess-cdc/pom.xml
++++ b/flink-connector-vitess-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -31,7 +31,7 @@ under the License.
+ 
+         <!-- Debezium dependencies -->
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-debezium</artifactId>
+             <version>${project.version}</version>
+             <exclusions>
+@@ -45,13 +45,14 @@ under the License.
+         <dependency>
+             <groupId>io.debezium</groupId>
+             <artifactId>debezium-connector-vitess</artifactId>
+-            <version>${debezium.version}</version>
++            <!-- Use patched debezium connector version -->
++            <version>1.9.8.Final</version>
+         </dependency>
+ 
+         <!-- test dependencies on Debezium -->
+ 
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-test-util</artifactId>
+             <version>${project.version}</version>
+             <scope>test</scope>
+diff --git a/flink-sql-connector-db2-cdc/pom.xml b/flink-sql-connector-db2-cdc/pom.xml
+index 86963a97..8b359a35 100644
+--- a/flink-sql-connector-db2-cdc/pom.xml
++++ b/flink-sql-connector-db2-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -27,7 +27,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-db2-cdc</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+@@ -87,4 +87,4 @@ under the License.
+             </plugin>
+         </plugins>
+     </build>
+-</project>
+\ No newline at end of file
++</project>
+diff --git a/flink-sql-connector-mongodb-cdc/pom.xml b/flink-sql-connector-mongodb-cdc/pom.xml
+index 80445242..8d3b7859 100644
+--- a/flink-sql-connector-mongodb-cdc/pom.xml
++++ b/flink-sql-connector-mongodb-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -27,7 +27,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-mongodb-cdc</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+@@ -114,4 +114,4 @@ under the License.
+             </plugin>
+         </plugins>
+     </build>
+-</project>
+\ No newline at end of file
++</project>
+diff --git a/flink-sql-connector-mysql-cdc/pom.xml b/flink-sql-connector-mysql-cdc/pom.xml
+index b42e806f..cfdb1b47 100644
+--- a/flink-sql-connector-mysql-cdc/pom.xml
++++ b/flink-sql-connector-mysql-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -27,7 +27,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-mysql-cdc</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+@@ -55,8 +55,8 @@ under the License.
+                                     <include>io.debezium:debezium-core</include>
+                                     <include>io.debezium:debezium-ddl-parser</include>
+                                     <include>io.debezium:debezium-connector-mysql</include>
+-                                    <include>com.ververica:flink-connector-debezium</include>
+-                                    <include>com.ververica:flink-connector-mysql-cdc</include>
++                                    <include>com.vinted:flink-connector-debezium</include>
++                                    <include>com.vinted:flink-connector-mysql-cdc</include>
+                                     <include>org.antlr:antlr4-runtime</include>
+                                     <include>org.apache.kafka:*</include>
+                                     <include>mysql:mysql-connector-java</include>
+@@ -84,10 +84,22 @@ under the License.
+                                 </filter>
+                             </filters>
+                             <relocations>
++<!--                                <relocation>-->
++<!--                                    <pattern>org.apache.kafka</pattern>-->
++<!--                                    <shadedPattern>-->
++<!--                                        com.ververica.cdc.connectors.shaded.org.apache.kafka-->
++<!--                                    </shadedPattern>-->
++<!--                                </relocation>-->
+                                 <relocation>
+-                                    <pattern>org.apache.kafka</pattern>
++                                    <pattern>org.apache.kafka.clients</pattern>
+                                     <shadedPattern>
+-                                        com.ververica.cdc.connectors.shaded.org.apache.kafka
++                                        com.ververica.cdc.connectors.shaded.org.apache.kafka.clients
++                                    </shadedPattern>
++                                </relocation>
++                                <relocation>
++                                    <pattern>org.apache.kafka.common</pattern>
++                                    <shadedPattern>
++                                        com.ververica.cdc.connectors.shaded.org.apache.kafka.common
+                                     </shadedPattern>
+                                 </relocation>
+                                 <relocation>
+@@ -125,4 +137,4 @@ under the License.
+             </plugin>
+         </plugins>
+     </build>
+-</project>
+\ No newline at end of file
++</project>
+diff --git a/flink-sql-connector-oceanbase-cdc/pom.xml b/flink-sql-connector-oceanbase-cdc/pom.xml
+index 84f15bea..a2df3723 100644
+--- a/flink-sql-connector-oceanbase-cdc/pom.xml
++++ b/flink-sql-connector-oceanbase-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -27,7 +27,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-oceanbase-cdc</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+diff --git a/flink-sql-connector-oracle-cdc/pom.xml b/flink-sql-connector-oracle-cdc/pom.xml
+index a5fcaf7a..07da9ab5 100644
+--- a/flink-sql-connector-oracle-cdc/pom.xml
++++ b/flink-sql-connector-oracle-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -27,7 +27,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-oracle-cdc</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+diff --git a/flink-sql-connector-postgres-cdc/pom.xml b/flink-sql-connector-postgres-cdc/pom.xml
+index 8672afe1..d7602176 100644
+--- a/flink-sql-connector-postgres-cdc/pom.xml
++++ b/flink-sql-connector-postgres-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -27,7 +27,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-postgres-cdc</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+@@ -107,4 +107,4 @@ under the License.
+             </plugin>
+         </plugins>
+     </build>
+-</project>
+\ No newline at end of file
++</project>
+diff --git a/flink-sql-connector-sqlserver-cdc/pom.xml b/flink-sql-connector-sqlserver-cdc/pom.xml
+index 3784e1c0..2a288179 100644
+--- a/flink-sql-connector-sqlserver-cdc/pom.xml
++++ b/flink-sql-connector-sqlserver-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -27,7 +27,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-sqlserver-cdc</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+diff --git a/flink-sql-connector-tidb-cdc/pom.xml b/flink-sql-connector-tidb-cdc/pom.xml
+index 15a997c6..5b3341f0 100644
+--- a/flink-sql-connector-tidb-cdc/pom.xml
++++ b/flink-sql-connector-tidb-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -27,7 +27,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-tidb-cdc</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+@@ -79,4 +79,4 @@ under the License.
+             </plugin>
+         </plugins>
+     </build>
+-</project>
+\ No newline at end of file
++</project>
+diff --git a/flink-sql-connector-vitess-cdc/pom.xml b/flink-sql-connector-vitess-cdc/pom.xml
+index 744282e8..4b9a8c86 100644
+--- a/flink-sql-connector-vitess-cdc/pom.xml
++++ b/flink-sql-connector-vitess-cdc/pom.xml
+@@ -18,8 +18,8 @@ under the License.
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+         <artifactId>flink-cdc-connectors</artifactId>
+-        <groupId>com.vinted</groupId>
+-        <version>2.5-SNAPSHOT</version>
++        <groupId>com.vinted</groupId>
++        <version>2.5.3</version>
+     </parent>
+     <modelVersion>4.0.0</modelVersion>
+ 
+@@ -27,7 +27,7 @@ under the License.
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.vinted</groupId>
++            <groupId>com.vinted</groupId>
+             <artifactId>flink-connector-vitess-cdc</artifactId>
+             <version>${project.version}</version>
+         </dependency>
+@@ -53,7 +53,38 @@ under the License.
+                             </transformers>
+                             <artifactSet>
+                                 <includes>
+-                                    <include>*:*</include>
++                                    <include>io.debezium:debezium-api</include>
++                                    <include>io.debezium:debezium-embedded</include>
++                                    <include>io.debezium:debezium-core</include>
++                                    <include>io.debezium:debezium-ddl-parser</include>
++                                    <include>io.debezium:debezium-connector-vitess</include>
++                                    <include>com.vinted:flink-connector-debezium</include>
++                                    <include>com.vinted:flink-connector-vitess-cdc</include>
++                                    <include>org.apache.kafka:*</include>
++                                    <include>com.github.luben.zstd:*</include>
++                                    <include>com.google.guava:*</include>
++                                    <include>io.vitess:vitess-grpc-client</include>
++                                    <include>io.vitess:vitess-client</include>
++                                    <include>io.netty:netty-handler</include>
++                                    <include>io.netty:netty-resolver</include>
++                                    <include>io.netty:netty-transport</include>
++                                    <include>io.netty:netty-buffer</include>
++                                    <include>io.netty:netty-codec-http2</include>
++                                    <include>io.netty:netty-codec-http</include>
++                                    <include>io.netty:netty-codec</include>
++                                    <include>io.netty:netty-common</include>
++                                    <include>io.grpc:grpc-core</include>
++                                    <include>io.grpc:grpc-netty</include>
++                                    <include>io.grpc:grpc-stub</include>
++                                    <include>io.grpc:grpc-protobuf</include>
++                                    <include>io.grpc:grpc-protobuf-lite</include>
++                                    <include>io.grpc:grpc-context</include>
++                                    <include>io.grpc:grpc-api</include>
++                                    <include>com.google.protobuf:protobuf-java</include>
++                                    <include>com.google.code.gson:gson</include>
++                                    <include>io.opentracing.contrib:opentracing-grpc</include>
++                                    <include>io.perfmark:perfmark-api</include>
++                                    <include>com.github.luben:zstd-jni</include>
+                                 </includes>
+                             </artifactSet>
+                             <relocations>
+@@ -69,6 +100,22 @@ under the License.
+                                     <pattern>com.google</pattern>
+                                     <shadedPattern>com.ververica.cdc.connectors.vitess.shaded.com.google</shadedPattern>
+                                 </relocation>
++                                <relocation>
++                                    <pattern>com.github.luben.zstd</pattern>
++                                    <shadedPattern>com.ververica.cdc.connectors.shaded.com.github.luben.zstd</shadedPattern>
++                                </relocation>
++                                <relocation>
++                                    <pattern>org.apache.kafka.clients</pattern>
++                                    <shadedPattern>
++                                        com.ververica.cdc.connectors.shaded.org.apache.kafka.clients
++                                    </shadedPattern>
++                                </relocation>
++                                <relocation>
++                                    <pattern>org.apache.kafka.common</pattern>
++                                    <shadedPattern>
++                                        com.ververica.cdc.connectors.shaded.org.apache.kafka.common
++                                    </shadedPattern>
++                                </relocation>
+                             </relocations>
+                             <filters>
+                                 <filter>
+diff --git a/pom.xml b/pom.xml
+index 7779c1c6..d3690ec0 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -25,9 +25,9 @@ under the License.
+ 
+     <modelVersion>4.0.0</modelVersion>
+ 
+-    <groupId>com.vinted</groupId>
++    <groupId>com.vinted</groupId>
+     <artifactId>flink-cdc-connectors</artifactId>
+-    <version>2.5-SNAPSHOT</version>
++    <version>2.5.3</version>
+     <packaging>pom</packaging>
+ 
+     <licenses>
+@@ -39,18 +39,14 @@ under the License.
+     </licenses>
+ 
+     <distributionManagement>
+-        <snapshotRepository>
+-            <id>oss</id>
+-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+-        </snapshotRepository>
+         <repository>
+-            <id>oss</id>
+-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
++            <id>cloudsmith</id>
++            <url>https://maven.cloudsmith.io/vinted/maven-hosted-oom/</url>
+         </repository>
+     </distributionManagement>
+ 
+     <properties>
+-        <flink.version>1.17.0</flink.version>
++        <flink.version>1.17.1</flink.version>
+         <debezium.version>1.9.7.Final</debezium.version>
+         <tikv.version>3.2.0</tikv.version>
+         <geometry.version>2.2.0</geometry.version>
+@@ -178,7 +174,19 @@ under the License.
+                     </execution>
+                 </executions>
+             </plugin>
+-
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-deploy-plugin</artifactId>
++                <version>2.8.2</version>
++                <configuration>
++                    <url>${project.distributionManagement.repository.url}</url>
++                    <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
++                    <artifactId>${project.artifactId}</artifactId>
++                    <groupId>${project.groupId}</groupId>
++                    <version>${project.version}</version>
++                    <generatePom>true</generatePom>
++                </configuration>
++            </plugin>
+             <plugin>
+                 <groupId>org.apache.rat</groupId>
+                 <artifactId>apache-rat-plugin</artifactId>
