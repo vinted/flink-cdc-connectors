@@ -46,7 +46,7 @@ under the License.
             <groupId>io.debezium</groupId>
             <artifactId>debezium-connector-vitess</artifactId>
             <!-- Use patched debezium connector version -->
-            <version>1.9.13.Final</version>
+            <version>1.9.14.Final</version>
 <!--            <version>${debezium.version}</version>-->
         </dependency>
 
